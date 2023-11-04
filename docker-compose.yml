@@ -1,0 +1,30 @@
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/usr/src/peeper
+      - bundle:/usr/local/bundle
+    command: ./bin/rails-entrypoint.sh
+  client:
+    build:
+      context: .
+      dockerfile: ./client/Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./client:/usr/src/client
+    command: yarn dev
+  redis:
+    image: redis
+  sidekiq:
+    build: .
+    command: bundle exec sidekiq
+    volumes:
+      - .:/usr/src/peeper
+    depends_on:
+      - redis
+
+volumes:
+  bundle:
